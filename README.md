@@ -1,1 +1,1 @@
-# -crafting-interpreters
+Repository for the book "Crafting Interpreters"
