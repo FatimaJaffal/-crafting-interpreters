@@ -46,12 +46,12 @@ public class Lox {
 
   private static void run(String source) {
     System.out.println(source);
-    // Scanner scanner = new Scanner(source);
-    // List<Token> tokens = Scanner.scanTokens();
+    Scanner scanner = new Scanner(source);
+    List<Token> tokens = scanner.scanTokens();
 
-    // for (Token.token : tokens) {
-    // System.out.println(token);
-    // }
+    for (Token token : tokens) {
+      System.out.println(token);
+    }
   }
 
   static void error(int line, String message) {
