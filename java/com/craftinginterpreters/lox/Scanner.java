@@ -96,14 +96,14 @@ public class Scanner {
         addToken(match('=') ? LESS_EQUAL : LESS);
         break;
       case '/':
+        /*
+         * Comments are lexemes, but they aren't meaningful, and the parser doesn't want
+         * to deal with them, so we don't call addToken() here.
+         */
         if (match('/')) {
-          // A comment goes until the end of the line.
-          while (peek() != '\n' && !isAtEnd())
-            advance();
-          /*
-           * Comments are lexemes, but they aren't meaningful, and the parser doesn't want
-           * to deal with them, so we don't call addToken() here.
-           */
+          SingleLineComment();
+        } else if (match('*')) {
+          multiLineComment();
         } else {
           addToken(SLASH);
         }
@@ -128,6 +128,40 @@ public class Scanner {
           Lox.error(line, "Unexpected character.");
         }
         break;
+    }
+  }
+
+  private void SingleLineComment() {
+    // A comment goes until the end of the line.
+    while (peek() != '\n' && !isAtEnd())
+      advance();
+  }
+
+  private void multiLineComment() {
+    /*
+     * We require some extra state to track the nesting, which makes this not quite regular.
+     */
+    int nesting = 1;
+    while (nesting > 0) {
+      if (peek() == '\0') {
+        Lox.error(line, "Unexpected end of comment.");
+        return;
+      }
+      if (peek() == '/' && peekNext() == '*') {
+        advance();
+        advance();
+        nesting++;
+        continue;
+      }
+      if (peek() == '*' && peekNext() == '/') {
+        advance();
+        advance();
+        nesting--;
+        continue;
+      }
+      if (peek() == '\n')
+        line++;
+      advance();
     }
   }
 
